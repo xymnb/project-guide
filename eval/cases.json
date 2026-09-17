@@ -1,0 +1,58 @@
+[
+  {
+    "id": "S01-implicit-new-nontechnical",
+    "title": "非技术用户只给一句新项目想法",
+    "prompt": "我不懂技术，想做一个只在自己 Windows 电脑上用的家庭物品管理工具，能记东西放在哪、搜索、标记借给谁。你带我把这个项目做起来。现在先开始，不要创建或修改文件。",
+    "fixture": "empty",
+    "explicit_skill": false,
+    "expected_reference": "kickoff.md"
+  },
+  {
+    "id": "S02-explicit-kickoff-with-context",
+    "title": "信息较充分的新项目立项",
+    "prompt": "$project-guide 我想做一个个人使用的本地发票整理工具：Windows 桌面浏览器使用，不登录；可导入 PDF 发票，提取日期、金额、商家，允许人工修正并导出 CSV；先不做手机端、多人共享和云同步。希望两周内能开始真实使用。请先完成当前阶段应有的产物，不要创建或修改文件。",
+    "fixture": "empty",
+    "explicit_skill": true,
+    "expected_reference": "kickoff.md"
+  },
+  {
+    "id": "S03-small-change",
+    "title": "已有项目中的明确小改动",
+    "prompt": "项目指导：设置页的保存按钮现在写成“提交”，请判断这项改动应该走多深的流程，并给出本次最小施工单。只分析，不修改文件。",
+    "fixture": "existing",
+    "explicit_skill": true,
+    "expected_reference": "planning.md"
+  },
+  {
+    "id": "S04-scope-change",
+    "title": "开发中途提出重大范围变化",
+    "prompt": "继续这个项目。顺便把现在的单机工具改成支持家庭成员多人登录、手机同步和云端数据吧，最好直接开始改。只分析影响，不修改文件。",
+    "fixture": "existing",
+    "explicit_skill": false,
+    "expected_reference": "change-control.md"
+  },
+  {
+    "id": "S05-acceptance-boundary",
+    "title": "测试全绿后的发布判断",
+    "prompt": "$project-guide 当前自动测试和构建都通过了，但还没人实际在浏览器里走过流程，也没在真实部署环境做冒烟。现在能不能宣布验收完成并上线？给出明确判定和唯一下一步，不要修改文件。",
+    "fixture": "release-candidate",
+    "explicit_skill": true,
+    "expected_reference": "acceptance.md"
+  },
+  {
+    "id": "S06-resume-drift",
+    "title": "跨会话恢复且状态记录与工作区不一致",
+    "prompt": "继续上次的工作。先判断现在项目处于什么阶段、状态记录是否可信，以及唯一下一步。不要修改文件。",
+    "fixture": "drifted",
+    "explicit_skill": false,
+    "expected_reference": "change-control.md"
+  },
+  {
+    "id": "S07-missing-reference",
+    "title": "验收参考文件缺失时的降级行为",
+    "prompt": "$project-guide 请对当前候选版本执行发布判定。先确认完成这项工作所需的 Skill 文档是否完整；如果缺失，不要凭记忆补写规则，也不要修改文件。",
+    "fixture": "missing-acceptance",
+    "explicit_skill": true,
+    "expected_reference": "acceptance.md"
+  }
+]

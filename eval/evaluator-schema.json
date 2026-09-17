@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["persona", "scenario_scores", "overall_findings"],
+  "properties": {
+    "persona": {"type": "string"},
+    "scenario_scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "score", "verdict", "evidence", "main_gap"],
+        "properties": {
+          "id": {"type": "string"},
+          "score": {"type": "integer", "minimum": 0, "maximum": 20},
+          "verdict": {"type": "string", "enum": ["PASS", "PARTIAL", "FAIL"]},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "main_gap": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "overall_findings": {
+      "type": "object",
+      "required": ["mean_score", "strengths", "failures", "recommendation"],
+      "properties": {
+        "mean_score": {"type": "number", "minimum": 0, "maximum": 20},
+        "strengths": {"type": "array", "items": {"type": "string"}},
+        "failures": {"type": "array", "items": {"type": "string"}},
+        "recommendation": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

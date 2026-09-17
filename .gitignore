@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# 评测运行产物（含会话轨迹与临时工作区，不随仓库发布）
+eval/runs/
+
+# 系统文件
+Thumbs.db
+desktop.ini
+.DS_Store
