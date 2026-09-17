@@ -55,7 +55,7 @@ def main() -> None:
             "--output-last-message", str(output),
             prompt,
         ]
-        proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=480)
+        proc = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", timeout=480)
         trace.write_text(proc.stdout, encoding="utf-8")
         stderr.write_text(proc.stderr, encoding="utf-8")
         if proc.returncode:

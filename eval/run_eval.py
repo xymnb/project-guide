@@ -122,7 +122,7 @@ def run_case(case: dict, run_dir: Path) -> dict:
         case["prompt"],
     ]
     started = time.monotonic()
-    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=360)
+    proc = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", timeout=360)
     elapsed = round(time.monotonic() - started, 2)
     write(trace, proc.stdout)
     write(stderr, proc.stderr)
