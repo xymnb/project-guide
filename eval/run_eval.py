@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -68,7 +69,11 @@ Next: 执行浏览器用户场景
 
 def copy_skill(work: Path, fixture: str) -> None:
     destination = work / ".agents" / "skills" / "project-guide"
-    shutil.copytree(SOURCE_SKILL, destination, ignore=shutil.ignore_patterns(".git", "__pycache__"))
+    shutil.copytree(
+        SOURCE_SKILL,
+        destination,
+        ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc", "project-guide.local.json"),
+    )
     if fixture == "missing-acceptance":
         (destination / "references" / "acceptance.md").unlink()
 
@@ -91,8 +96,24 @@ def reference_read_status(trace_text: str, expected_reference: str) -> tuple[boo
             continue
         attempted = True
         output = str(item.get("aggregated_output", "")).lower().replace("\\", "/")
-        missing_markers = ("cannot find path", "does not exist", "no such file")
-        if item.get("exit_code") == 0 and not any(marker in output for marker in missing_markers):
+        missing_markers = (
+            "cannot find path",
+            "does not exist",
+            "no such file",
+            "not found",
+            "找不到",
+            "不存在",
+        )
+        expected_pattern = re.escape(expected)
+        read_patterns = (
+            rf"get-content[^;\n|]*{expected_pattern}",
+            rf"(?:cat|type|more)\s+[^;\n|]*{expected_pattern}",
+            rf"(?:read_text|open)\([^)]*{expected_pattern}",
+        )
+        actually_read = any(re.search(pattern, command) for pattern in read_patterns)
+        # A compound command may read the reference successfully and fail later on
+        # an unrelated subcommand, so the overall exit code is not sufficient.
+        if actually_read and not any(marker in output for marker in missing_markers):
             succeeded = True
     return attempted, succeeded
 
