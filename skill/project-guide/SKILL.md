@@ -134,11 +134,11 @@ AI 接下来：<现有授权内可继续的动作>
 | 验收、发布判定、AI 功能评估 | references/acceptance.md |
 | 新需求、跨会话交接、状态记录 | references/change-control.md |
 | 操作权限边界（依赖/迁移/部署/外部动作） | references/authority.md |
-| 已配置本地深知识库且当前问题需要更多方法论细节 | references/knowledge-router.md |
+| 已配置并启用本地深知识库，且当前阶段存在 route 映射 | references/knowledge-router.md（必须读取） |
 
 ## 可选深知识层
 
-核心 Skill 必须在没有 Obsidian 或其他本地知识库时独立工作。如果 Skill 根目录存在启用的 `project-guide.local.json`，先按上表读取核心 reference，再读 `references/knowledge-router.md`。深知识读取采用 **allowlist-only**：只能读取 local config 当前 route 明确列出的精确文件，最多 1–2 篇。**硬门：选定 route 后，对 Knowledge Base 的第一个、以及后续允许的文件系统动作，都只能是直接读取 route 中的精确文件路径。** 对 Knowledge Base 根目录或任何子目录执行 `ls` / `dir` / `Get-ChildItem` / `find` / `tree` / `rg` / glob / 全文搜索都属于违规，即使只是想确认文件是否存在；不要通过目录枚举发现更多知识库文件。
+核心 Skill 必须在没有 Obsidian 或其他本地知识库时独立工作。**可选的是是否配置知识库，不是每次是否路由。** 如果 Skill 根目录存在启用的 `project-guide.local.json`，且当前阶段/问题类型在其中存在 route 映射，则在读取核心 reference 后 **必须** 读取 `references/knowledge-router.md`、选择对应 route，并读取该 route 的首篇有效 deep doc；不要再由模型自行判断“核心规则已经够用所以跳过深知识”。只有配置缺失、disabled、无对应 route 或 route 无有效条目时才 fallback 到核心 Skill。深知识读取采用 **allowlist-only**：只能读取 local config 当前 route 明确列出的精确文件，最多 1–2 篇。**硬门：选定 route 后，对 Knowledge Base 的第一个、以及后续允许的文件系统动作，都只能是直接读取 route 中的精确文件路径。** 对 Knowledge Base 根目录或任何子目录执行 `ls` / `dir` / `Get-ChildItem` / `find` / `tree` / `rg` / glob / 全文搜索都属于违规，即使只是想确认文件是否存在；不要通过目录枚举发现更多知识库文件。
 
 除非用户明确要求研究原始来源，否则**绝对禁止读取**路径中包含 `90 原始资料`、原始聊天、JSON/JSONL 或历史导出的文件；不要为了“确认说明”“看看是否相关”或读取一个名为 `DO_NOT_READ` 的文件而例外。若 route 自身错误指向这些区域，将该 route 项视为无效并跳过，不读取其内容。
 

@@ -7,7 +7,7 @@ Project Guide 的核心规则必须在没有外部知识库时独立可用。本
 仅当 Skill 根目录存在 `project-guide.local.json` 且其中 `enabled: true` 时启用。
 本地配置属于机器私有配置，不进入 Git，不进入公开 Skill，也不应复制进报告。
 
-启用后仍先读取当前任务对应的核心 `references/*.md`，再按本文件决定是否需要深读本地知识库。
+启用后仍先读取当前任务对应的核心 `references/*.md`。**若当前阶段/问题类型在 local config 中存在 route 映射，则必须执行该 route，不得因为模型认为核心规则已足够而跳过。** 至少读取该 route 的首篇有效 deep doc；只有配置缺失/disabled、没有对应 route、或 route 没有有效条目时才回退到核心 Skill。
 没有本地配置、路径失效或目标文档缺失时，直接回退到核心 Skill；这本身不是项目 BLOCKED。
 ## 信息优先级
 
