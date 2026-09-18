@@ -88,6 +88,10 @@ AI 负责主动查状态、整理信息、提出主推荐、形成产物、执�
 
 面向非技术用户时，尽量给**一套主推荐 + 最少必要问题 + 唯一下一步**，而不是把数据库、框架或部署细节重新甩给用户。
 
+### 9. Optional Deep Knowledge Layer
+
+核心 Skill 独立可用；本机如有更完整的方法论知识库，可通过未跟踪的 `project-guide.local.json` 启用深知识路由。Agent 仍先使用核心规则，只在复杂场景按阶段精确读取 1–2 篇深层文档，不扫描整个知识库，也不把历史方法论当成当前项目证据。
+
 ## 工作流程
 
 ```mermaid
@@ -116,7 +120,9 @@ project-guide/
 ├── skill/
 │   └── project-guide/
 │       ├── SKILL.md
-│       └── references/
+│       ├── project-guide.local.example.json
+│       ├── references/          # 核心规则 + 可选 Knowledge Router
+│       └── scripts/             # 本地知识库配置校验
 ├── docs/
 │   └── design.md
 └── eval/
@@ -147,7 +153,18 @@ Windows: %USERPROFILE%\.agents\skills\project-guide
 macOS / Linux: ~/.agents/skills/project-guide
 ```
 
-不同客户端的 Skill 目录可能不同，请以该客户端实际约定为准。Skill 本体仅包含 Markdown，不需要额外运行时依赖。
+不同客户端的 Skill 目录可能不同，请以该客户端实际约定为准。核心运行规则无需额外服务；仅可选的本地知识库校验脚本需要 Python。
+
+## 可选：连接本地 Obsidian / Knowledge Base
+
+公开版不会包含作者本机路径。若你有自己的深层知识库，可复制 `project-guide.local.example.json` 为 `project-guide.local.json`，设置 `knowledge_base_root` 与各阶段 `routes`。真实 local 配置被 Git 忽略，不应提交到公开仓库。
+
+```bash
+python scripts/validate_knowledge_base.py
+```
+
+启用后，Skill 先执行自身核心规则，再按当前阶段读取 route 中最多 1–2 篇文档；不会递归追 Obsidian 链接，也不会自动读取原始聊天或原始资料。配置缺失、路径失效时自动回退到核心 Skill，不因此阻塞项目。
+
 ## 使用方式
 
 安装后可以直接用自然语言启动，例如：
@@ -210,7 +227,7 @@ python run_graders.py runs/<时间戳>
 - 实际运行中的 Skill 是行为 Source of Truth；
 - 本仓库 `skill/project-guide/` 发布与运行版一致的公开副本；
 - `eval/` 是当前正式测试与回归维护位置；
-- 私有 Obsidian / 原始研究资料只作为历史与研究档案，不进入公开仓库，也不由发布流程改写。
+- 私有 Obsidian / 原始研究资料不进入公开仓库，也不由发布流程改写；本机可通过被 Git 忽略的 local config 将其作为只读深知识层接入。
 
 ## License
 

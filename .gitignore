@@ -5,6 +5,9 @@ __pycache__/
 # 评测运行产物（含会话轨迹与临时工作区，不随仓库发布）
 eval/runs/
 
+# 本机私有 Knowledge Base 配置
+skill/project-guide/project-guide.local.json
+
 # 系统文件
 Thumbs.db
 desktop.ini

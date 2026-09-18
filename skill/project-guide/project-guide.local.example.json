@@ -1,0 +1,15 @@
+{
+  "enabled": false,
+  "knowledge_base_root": "<path-to-your-knowledge-base>",
+  "routes": {
+    "kickoff": ["10 流程/02 立项与产品设计.md", "10 流程/09 AI 主动带项目.md"],
+    "architecture": ["10 流程/03 架构设计与冻结.md"],
+    "planning": ["10 流程/04 开发规划与任务拆解.md"],
+    "coding": ["10 流程/05 Coding 标准循环.md", "10 流程/01 工程起点与工作规则.md"],
+    "acceptance": ["10 流程/06 验证与人机验收.md"],
+    "release": ["10 流程/07 发布交付与持续迭代.md", "30 控制与模板/23 验收与发布模板.md"],
+    "change_control": ["30 控制与模板/19 项目真相与变更管理.md"],
+    "authority": ["10 流程/08 操作权限与授权边界.md"],
+    "templates": ["30 控制与模板/21 标准指令模板.md", "30 控制与模板/22 立项与架构交接模板.md"]
+  }
+}

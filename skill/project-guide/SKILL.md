@@ -134,5 +134,12 @@ AI 接下来：<现有授权内可继续的动作>
 | 验收、发布判定、AI 功能评估 | references/acceptance.md |
 | 新需求、跨会话交接、状态记录 | references/change-control.md |
 | 操作权限边界（依赖/迁移/部署/外部动作） | references/authority.md |
+| 已配置本地深知识库且当前问题需要更多方法论细节 | references/knowledge-router.md |
 
-来源：《Vibe Coding 手册》（作者私有研究库，不在本仓库发布）。本 Skill 是运行时蒸馏版；重大规则修订应同步维护公开设计说明与测试。
+## 可选深知识层
+
+核心 Skill 必须在没有 Obsidian 或其他本地知识库时独立工作。如果 Skill 根目录存在启用的 `project-guide.local.json`，先按上表读取核心 reference，再读 `references/knowledge-router.md`，只按当前阶段精确加载最多 1–2 篇深层文档。
+
+本地知识库是方法论补充，不是项目状态证据；不得用其中的历史描述覆盖当前 Git、项目文件、PROJECT.md、ADR 或本轮验证结果。配置缺失、路径失效或深层文档缺失时回退到核心 Skill，不因此把项目判为 BLOCKED。
+
+来源：《Vibe Coding 手册》（作者私有研究库，不在本仓库发布）。当前运行规则以本 Skill 为准；私有手册可作为本地只读深知识层，公开设计说明与测试随规则变更维护。

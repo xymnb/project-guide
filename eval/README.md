@@ -55,6 +55,10 @@ python run_graders.py runs/<时间戳>
 
 运行器默认评测**本仓库内**的 `../skill/project-guide`；如需评测本机安装的其他副本，改 `run_eval.py` 顶部的 `SOURCE_SKILL` 常量即可。
 
+为保证可复现性和隐私，`copy_skill()` 会强制排除 `project-guide.local.json`：Eval 不读取维护者的私人 Obsidian / Knowledge Base，只测试公开核心 Skill 的 fallback 行为。
+
+因此当前 7 个端到端场景验证的是“没有本地知识库也能正常工作且不回归”。本地 Knowledge Router 的配置完整性由 `skill/project-guide/scripts/validate_knowledge_base.py` 校验；实际深知识读取属于本机增强测试，不把私人知识库纳入公开 Eval。
+
 ## 产物
 
 每次运行写入 `runs/<时间戳>/`（已 gitignore，不随仓库发布）：
