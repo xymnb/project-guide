@@ -171,6 +171,36 @@ def reference_read_status(trace_text: str, expected_reference: str) -> tuple[boo
     return attempted, succeeded
 
 
+def knowledge_base_enumeration_commands(trace_text: str) -> list[str]:
+    """Return discovery/enumeration commands that target the synthetic Knowledge Base."""
+    attempts: list[str] = []
+    markers = (
+        "get-childitem",
+        "childitem",
+        "find ",
+        "tree ",
+        "rg ",
+        "ls ",
+        "dir ",
+        "fd ",
+        "os.listdir",
+        "rglob(",
+        "glob(",
+    )
+    for line in trace_text.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        item = event.get("item", {})
+        if event.get("type") != "item.completed" or item.get("type") != "command_execution":
+            continue
+        command = str(item.get("command", "")).lower().replace("\\", "/")
+        if ".project-guide-kb" in command and any(marker in command for marker in markers):
+            attempts.append(str(item.get("command", "")))
+    return attempts
+
+
 def detect_infra_blocked(stdout: str, stderr: str) -> bool:
     text = (stdout + "\n" + stderr).lower()
     markers = (
@@ -230,8 +260,11 @@ def run_case(case: dict, run_dir: Path) -> dict:
             forbidden_attempts.append(forbidden)
 
     infra_blocked = detect_infra_blocked(proc.stdout, proc.stderr)
+    kb_enumeration_attempts = knowledge_base_enumeration_commands(proc.stdout)
     router_expected = case.get("expected_knowledge_router")
     router_objective_pass = reference_succeeded and not forbidden_attempts
+    if case.get("forbid_kb_enumeration"):
+        router_objective_pass = router_objective_pass and not kb_enumeration_attempts
     if router_expected is True:
         router_objective_pass = router_objective_pass and router_succeeded
     elif router_expected is False:
@@ -260,6 +293,7 @@ def run_case(case: dict, run_dir: Path) -> dict:
         "expected_deep_reference_read_attempted": deep_attempted,
         "expected_deep_reference_read_succeeded": deep_succeeded,
         "forbidden_reference_attempts": forbidden_attempts,
+        "knowledge_base_enumeration_attempts": kb_enumeration_attempts,
         "router_objective_pass": router_objective_pass if router_expected is not None else None,
         "answer_characters": len(answer_text),
         "worktree_status": subprocess.run(

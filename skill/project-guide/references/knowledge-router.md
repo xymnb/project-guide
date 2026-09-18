@@ -25,7 +25,7 @@ Project Guide 的核心规则必须在没有外部知识库时独立可用。本
 1. 先判断当前阶段或问题类型。
 2. 先读取对应核心 reference。
 3. 读取 `project-guide.local.json`，从 `routes` 选择一个最贴近当前问题的 route key。
-4. **route 条目就是唯一读取白名单。** 只允许直接读取该 route 明确列出的精确文件；不要先列出、遍历、搜索或索引 Knowledge Base 根目录，也不要用 `find`、递归 `dir`、`rg`、glob、全文搜索等方式“发现可能相关的文档”。
+4. **route 条目就是唯一读取白名单。硬门：读取 local config 并选定 route 后，对 Knowledge Base 的第一个文件系统动作必须是直接打开 route 给出的精确文件路径；之后也只能直接打开该 route 允许的精确文件。** 禁止对 Knowledge Base 根目录或任何子目录执行 `ls`、`dir`、`Get-ChildItem`、`find`、`tree`、`rg`、glob、全文搜索或其他目录枚举；“确认文件是否存在”“看一下有哪些文件”也不能例外。
 5. 默认最多读取该 route 的前 2 篇文档；足够回答就停止。
 6. **硬禁止区**：除非用户明确要求研究原始来源，否则路径中包含 `90 原始资料`、原始聊天、JSON/JSONL 或历史导出的文件一律不得读取。即使文件名是 `DO_NOT_READ`、README、说明文档，或模型想“先读一下确认”，也不得打开。若 route 配置错误指向硬禁止区，将该条目视为无效并跳过。
 7. 不递归追随 Obsidian wiki 链接、来源链接或深层文档里的“推荐阅读”；这些链接不能扩大第 4 步的读取白名单。

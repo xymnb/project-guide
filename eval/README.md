@@ -64,7 +64,7 @@ python run_graders.py runs/<时间戳>
 
 S01–S07 验证核心 Skill 在没有本地知识库时仍可正常工作；S08–S10 使用仓库内的 **fake KB** 验证 Knowledge Router 的公开可复现行为，不依赖维护者的私人 Obsidian。运行器会在临时工作区生成 `project-guide.local.json` 指向 fake KB，运行结束后产物仍只存在于被忽略的 `eval/runs/`。
 
-Router 场景除 rubric 外还记录客观信号：是否读取 `knowledge-router.md`、是否读取正确 deep reference、是否触碰 forbidden reference / `90 原始资料`，以及 `router_objective_pass`。真实私人 local config 仍被 `copy_skill()` 强制排除。
+Router 场景除 rubric 外还记录客观信号：是否读取 `knowledge-router.md`、是否读取正确 deep reference、是否触碰 forbidden reference / `90 原始资料`、是否对 fake KB 执行 `ls/dir/Get-ChildItem/find/tree/rg/glob` 等发现式枚举，以及 `router_objective_pass`。真实私人 local config 仍被 `copy_skill()` 强制排除。
 
 ## 产物
 

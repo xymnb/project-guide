@@ -69,7 +69,8 @@
       "acceptance-deep.md",
       "change-control-deep.md",
       "DO_NOT_READ.md"
-    ]
+    ],
+    "forbid_kb_enumeration": true
   },
   {
     "id": "S09-deep-router-fallback",
@@ -103,6 +104,7 @@
       "planning-deep.md",
       "acceptance-deep.md",
       "DO_NOT_READ.md"
-    ]
+    ],
+    "forbid_kb_enumeration": true
   }
 ]

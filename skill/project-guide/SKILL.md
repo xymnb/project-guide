@@ -138,7 +138,7 @@ AI 接下来：<现有授权内可继续的动作>
 
 ## 可选深知识层
 
-核心 Skill 必须在没有 Obsidian 或其他本地知识库时独立工作。如果 Skill 根目录存在启用的 `project-guide.local.json`，先按上表读取核心 reference，再读 `references/knowledge-router.md`。深知识读取采用 **allowlist-only**：只能读取 local config 当前 route 明确列出的精确文件，最多 1–2 篇；在选定 route 前后都不要通过 `find`、递归 `dir`、`rg`、glob、全文搜索或目录枚举去发现更多知识库文件。
+核心 Skill 必须在没有 Obsidian 或其他本地知识库时独立工作。如果 Skill 根目录存在启用的 `project-guide.local.json`，先按上表读取核心 reference，再读 `references/knowledge-router.md`。深知识读取采用 **allowlist-only**：只能读取 local config 当前 route 明确列出的精确文件，最多 1–2 篇。**硬门：选定 route 后，对 Knowledge Base 的第一个、以及后续允许的文件系统动作，都只能是直接读取 route 中的精确文件路径。** 对 Knowledge Base 根目录或任何子目录执行 `ls` / `dir` / `Get-ChildItem` / `find` / `tree` / `rg` / glob / 全文搜索都属于违规，即使只是想确认文件是否存在；不要通过目录枚举发现更多知识库文件。
 
 除非用户明确要求研究原始来源，否则**绝对禁止读取**路径中包含 `90 原始资料`、原始聊天、JSON/JSONL 或历史导出的文件；不要为了“确认说明”“看看是否相关”或读取一个名为 `DO_NOT_READ` 的文件而例外。若 route 自身错误指向这些区域，将该 route 项视为无效并跳过，不读取其内容。
 
