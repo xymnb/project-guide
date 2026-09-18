@@ -171,6 +171,17 @@ def reference_read_status(trace_text: str, expected_reference: str) -> tuple[boo
     return attempted, succeeded
 
 
+def detect_infra_blocked(stdout: str, stderr: str) -> bool:
+    text = (stdout + "\n" + stderr).lower()
+    markers = (
+        "you've hit your usage limit",
+        "you’ve hit your usage limit",
+        "usage limit",
+        "codex-code-mode-host.exe",
+    )
+    return any(marker in text for marker in markers)
+
+
 def run_case(case: dict, run_dir: Path) -> dict:
     work = run_dir / "work" / case["id"]
     work.mkdir(parents=True)
@@ -218,6 +229,7 @@ def run_case(case: dict, run_dir: Path) -> dict:
         if attempted:
             forbidden_attempts.append(forbidden)
 
+    infra_blocked = detect_infra_blocked(proc.stdout, proc.stderr)
     router_expected = case.get("expected_knowledge_router")
     router_objective_pass = reference_succeeded and not forbidden_attempts
     if router_expected is True:
@@ -226,12 +238,16 @@ def run_case(case: dict, run_dir: Path) -> dict:
         router_objective_pass = router_objective_pass and not router_attempted
     if deep_reference:
         router_objective_pass = router_objective_pass and deep_succeeded
+    if infra_blocked:
+        router_objective_pass = None
 
     answer_text = output.read_text(encoding="utf-8") if output.exists() else ""
     data = {
         "id": case["id"],
         "title": case["title"],
         "returncode": proc.returncode,
+        "status": "INFRA_BLOCKED" if infra_blocked else ("OK" if proc.returncode == 0 else "ERROR"),
+        "infra_blocked": infra_blocked,
         "elapsed_seconds": elapsed,
         "expected_reference": case["expected_reference"],
         "expected_reference_read_attempted": reference_attempted,
