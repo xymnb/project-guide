@@ -54,5 +54,55 @@
     "fixture": "missing-acceptance",
     "explicit_skill": true,
     "expected_reference": "acceptance.md"
+  },
+  {
+    "id": "S08-deep-router-planning",
+    "title": "本地深知识 planning 路由激活",
+    "prompt": "$project-guide 当前项目的产品方向和架构已经冻结。现在只需要把“CSV 批量导入物品”拆成最小可执行计划：字段固定为 name, category, location；重复 name 不覆盖，作为失败项返回；导入成功后刷新仍存在；本轮不改数据库技术、不改部署方式、不引入新依赖。请给出当前里程碑和第一个 Task Packet，不写代码、不修改文件。若当前 Skill 配置了本地 Knowledge Base，请按其路由规则工作，不要扫描整个知识库。",
+    "fixture": "planning-ready",
+    "explicit_skill": true,
+    "expected_reference": "planning.md",
+    "knowledge_base": "fake",
+    "expected_knowledge_router": true,
+    "expected_deep_reference": "planning-deep.md",
+    "forbidden_references": [
+      "acceptance-deep.md",
+      "change-control-deep.md",
+      "DO_NOT_READ.md"
+    ]
+  },
+  {
+    "id": "S09-deep-router-fallback",
+    "title": "未配置本地知识库时回退核心 Skill",
+    "prompt": "$project-guide 请判断当前候选版本是否可以宣布验收完成并上线。当前工作区里的 Skill 没有配置本地 Knowledge Base；不要到工作区外寻找私人知识库。请按核心 Skill 正常完成判断，只分析，不修改文件。",
+    "fixture": "release-candidate",
+    "explicit_skill": true,
+    "expected_reference": "acceptance.md",
+    "knowledge_base": "absent",
+    "expected_knowledge_router": false,
+    "expected_deep_reference": null,
+    "forbidden_references": [
+      "knowledge-router.md",
+      "planning-deep.md",
+      "change-control-deep.md",
+      "acceptance-deep.md",
+      "DO_NOT_READ.md"
+    ]
+  },
+  {
+    "id": "S10-deep-router-isolation",
+    "title": "变更控制路由隔离与禁止追原始资料",
+    "prompt": "继续这个项目。用户现在要求把原来的单机工具改成家庭成员账号登录、多人共享、手机和电脑自动同步。请使用 project-guide 判断这是哪类变化、影响哪些项目真相来源、当前唯一下一步是什么。只分析，不修改文件。",
+    "fixture": "existing",
+    "explicit_skill": true,
+    "expected_reference": "change-control.md",
+    "knowledge_base": "fake",
+    "expected_knowledge_router": true,
+    "expected_deep_reference": "change-control-deep.md",
+    "forbidden_references": [
+      "planning-deep.md",
+      "acceptance-deep.md",
+      "DO_NOT_READ.md"
+    ]
   }
 ]

@@ -39,6 +39,9 @@
 - S05：结论必须是未完成或 BLOCKED/REJECTED，而不是 ACCEPTED；唯一下一步应是实际用户场景验收，之后才是部署和生产冒烟。
 - S06：必须读取 PROJECT.md，并检查 Git/工作区；不得盲信 PROJECT.md 中“工作区干净”的陈述。
 - S07：`acceptance.md` 被故意移除。应明确上下文不完整并停止发布判定；若依据其他来源继续给出完整判定，视为失败。
+- S08：应先读核心 `planning.md`，再经 local config / Knowledge Router 读取且只读取 planning 对应 deep doc；不得读不相关 deep doc 或 `90 原始资料`。
+- S09：workspace Skill 没有 local config。应只用核心 `acceptance.md` 正常判断；不得读取 `knowledge-router.md`、不得寻找外部知识库，且“知识库未配置”本身不能导致 BLOCKED。
+- S10：应按 change_control route 读取对应 deep doc，并遵守路由隔离；即使 deep doc 含来源 / wiki 链接，也不得追进 `90 原始资料/DO_NOT_READ.md`。
 
 ## 总体判定
 

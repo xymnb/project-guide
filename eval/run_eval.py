@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 CASES = json.loads((ROOT / "cases.json").read_text(encoding="utf-8"))
 SOURCE_SKILL = ROOT.parent / "skill" / "project-guide"
+FAKE_KB = ROOT / "fixtures" / "fake-kb"
 
 
 def write(path: Path, text: str) -> None:
@@ -26,7 +27,7 @@ def create_fixture(work: Path, fixture: str) -> None:
     subprocess.run(["git", "config", "user.name", "Eval Fixture"], cwd=work, check=True)
     subprocess.run(["git", "config", "user.email", "eval@localhost"], cwd=work, check=True)
 
-    if fixture in {"existing", "release-candidate", "drifted", "missing-acceptance"}:
+    if fixture in {"existing", "release-candidate", "drifted", "missing-acceptance", "planning-ready"}:
         write(
             work / "docs" / "PROJECT.md",
             """# 项目状态（唯一真相）
@@ -58,6 +59,36 @@ Next: 执行浏览器用户场景
 工作区干净。
 """,
         )
+        if fixture == "planning-ready":
+            write(
+                work / "docs" / "PROJECT.md",
+                """# 项目状态（唯一真相）
+
+## Brief
+目标用户：个人用户
+产品形态：Windows 本地应用
+明确不做：登录、多人协作、云同步、手机 App
+架构状态：FROZEN
+技术边界：不改数据库技术、不改部署方式、不引入新依赖
+
+## 当前里程碑
+M2：CSV 批量导入物品
+输入字段：name, category, location
+重复规则：重复 name 不覆盖已有记录，作为失败项返回
+持久化要求：导入成功后刷新仍存在
+
+## 当前任务
+Task: PLAN-CSV
+Status: READY FOR PLANNING
+Next: 形成最小里程碑和第一个 Task Packet
+
+## 唯一下一步
+完成 CSV 导入功能的开发规划，不进入 Coding。
+
+## 工作区记录
+工作区干净。
+""",
+            )
         write(work / "src" / "settings.txt", "primary_button=提交\n")
         write(work / "package.json", '{"scripts":{"test":"echo tests-pass","build":"echo build-pass"}}\n')
         subprocess.run(["git", "add", "."], cwd=work, check=True)
@@ -76,6 +107,28 @@ def copy_skill(work: Path, fixture: str) -> None:
     )
     if fixture == "missing-acceptance":
         (destination / "references" / "acceptance.md").unlink()
+
+
+def setup_knowledge_base(work: Path, case: dict) -> None:
+    mode = case.get("knowledge_base")
+    if mode != "fake":
+        return
+
+    destination = work / ".project-guide-kb"
+    shutil.copytree(FAKE_KB, destination)
+    local_config = {
+        "enabled": True,
+        "knowledge_base_root": str(destination),
+        "routes": {
+            "planning": ["methods/planning-deep.md"],
+            "change_control": ["methods/change-control-deep.md"],
+            "acceptance": ["methods/acceptance-deep.md"],
+        },
+    }
+    write(
+        work / ".agents" / "skills" / "project-guide" / "project-guide.local.json",
+        json.dumps(local_config, ensure_ascii=False, indent=2) + "\n",
+    )
 
 
 def reference_read_status(trace_text: str, expected_reference: str) -> tuple[bool, bool]:
@@ -123,6 +176,7 @@ def run_case(case: dict, run_dir: Path) -> dict:
     work.mkdir(parents=True)
     create_fixture(work, case["fixture"])
     copy_skill(work, case["fixture"])
+    setup_knowledge_base(work, case)
 
     case_dir = run_dir / "cases" / case["id"]
     case_dir.mkdir(parents=True)
@@ -151,6 +205,28 @@ def run_case(case: dict, run_dir: Path) -> dict:
     reference_attempted, reference_succeeded = reference_read_status(
         proc.stdout, case["expected_reference"]
     )
+    router_attempted, router_succeeded = reference_read_status(proc.stdout, "knowledge-router.md")
+    deep_reference = case.get("expected_deep_reference")
+    if deep_reference:
+        deep_attempted, deep_succeeded = reference_read_status(proc.stdout, deep_reference)
+    else:
+        deep_attempted, deep_succeeded = False, False
+
+    forbidden_attempts = []
+    for forbidden in case.get("forbidden_references", []):
+        attempted, _ = reference_read_status(proc.stdout, forbidden)
+        if attempted:
+            forbidden_attempts.append(forbidden)
+
+    router_expected = case.get("expected_knowledge_router")
+    router_objective_pass = reference_succeeded and not forbidden_attempts
+    if router_expected is True:
+        router_objective_pass = router_objective_pass and router_succeeded
+    elif router_expected is False:
+        router_objective_pass = router_objective_pass and not router_attempted
+    if deep_reference:
+        router_objective_pass = router_objective_pass and deep_succeeded
+
     answer_text = output.read_text(encoding="utf-8") if output.exists() else ""
     data = {
         "id": case["id"],
@@ -160,6 +236,15 @@ def run_case(case: dict, run_dir: Path) -> dict:
         "expected_reference": case["expected_reference"],
         "expected_reference_read_attempted": reference_attempted,
         "expected_reference_read_succeeded": reference_succeeded,
+        "knowledge_base": case.get("knowledge_base"),
+        "expected_knowledge_router": router_expected,
+        "knowledge_router_read_attempted": router_attempted,
+        "knowledge_router_read_succeeded": router_succeeded,
+        "expected_deep_reference": deep_reference,
+        "expected_deep_reference_read_attempted": deep_attempted,
+        "expected_deep_reference_read_succeeded": deep_succeeded,
+        "forbidden_reference_attempts": forbidden_attempts,
+        "router_objective_pass": router_objective_pass if router_expected is not None else None,
         "answer_characters": len(answer_text),
         "worktree_status": subprocess.run(
             ["git", "status", "--short"], cwd=work, capture_output=True, text=True, encoding="utf-8"

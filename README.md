@@ -192,7 +192,7 @@ python scripts/validate_knowledge_base.py
 
 ## Eval
 
-`eval/` 提供 7 个端到端行为场景，覆盖：
+`eval/` 提供 10 个端到端行为场景，覆盖：
 
 1. 非技术用户一句话启动新项目；
 2. 信息充分时直接形成 Kickoff 产物；
@@ -200,7 +200,10 @@ python scripts/validate_knowledge_base.py
 4. 开发中途发生重大 Scope Change；
 5. 自动测试通过但人工验收 / 部署证据不足；
 6. 跨会话恢复且状态文件与 Git 工作区冲突；
-7. 必要 reference 缺失时是否诚实进入 `BLOCKED`。
+7. 必要 reference 缺失时是否诚实进入 `BLOCKED`；
+8. fake Knowledge Base 下的 planning 深知识路由；
+9. 没有 local config 时是否正确 fallback 到核心 Skill；
+10. change-control 路由是否保持隔离、不会追进 `90 原始资料`。
 评测不是比较固定措辞，而是检查 Agent 是否真的表现出 Skill 规定的行为。`rubric.md` 使用 10 个维度、每项 0–2 分的 20 分制评分。
 
 运行前提：Python 3.9+、Git、已安装并登录的 Codex CLI。

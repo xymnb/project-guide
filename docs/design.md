@@ -65,8 +65,8 @@
 
 评测回答一个问题：装上这个 Skill 的真实 Agent，在典型场景里是否表现出规范要求的行为——而不是措辞是否与手册一致。
 
-- **7 个端到端场景**：从「非技术用户一句想法」到「参考文件被故意移除时的降级行为」，每个场景在临时 Git 工作区（fixture）中通过 `codex exec` 运行真实会话；
-- **程序化检查**：预期 reference 是否被实际读取、是否发生未授权写入、耗时与输出规模；
+- **10 个端到端场景**：S01–S07 验证核心流程与 fallback，S08–S10 用仓库内 fake KB 验证 deep route 激活、local config 缺失 fallback 和路由隔离；每个场景在临时 Git 工作区（fixture）中通过 `codex exec` 运行真实会话；
+- **程序化检查**：预期核心 reference / deep reference 是否被实际读取、是否触碰 forbidden reference 或 `90 原始资料`、是否发生未授权写入、耗时与输出规模；
 - **三人人设评分**：非技术用户 / 工程负责人 / 验收 QA，各自按 20 分制 rubric 独立打分，18 分以上视为达标；
 - **产物**：每次运行落盘 answer/trace/metadata/summary，可复查。
 

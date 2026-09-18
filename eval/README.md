@@ -1,12 +1,12 @@
 # project-guide 评测
 
-端到端评测：把 Skill 装进临时工作区，用真实 Agent 会话跑 7 个典型场景，再由三个独立人设按 rubric 评分。
+端到端评测：把 Skill 装进临时工作区，用真实 Agent 会话跑 10 个典型场景，再由三个独立人设按 rubric 评分。
 
 ## 组成
 
 | 文件 | 作用 |
 |---|---|
-| `cases.json` | 7 个场景定义：提示词、fixture 类型、预期读取的 reference |
+| `cases.json` | 10 个场景定义：提示词、fixture 类型、预期核心 / 深层 reference |
 | `run_eval.py` | 场景运行器：搭建 fixture、复制 Skill、调用 `codex exec`、落盘产物 |
 | `run_graders.py` | 评分运行器：三个人设各跑一轮，输出符合 schema 的 JSON 评分 |
 | `rubric.md` | 评分标准：10 维度 × 0-2 分，共 20 分；含每场景特定要求 |
@@ -23,6 +23,9 @@
 | S05-acceptance-boundary | 测试全绿后的发布判断 | release-candidate | acceptance.md |
 | S06-resume-drift | 跨会话恢复且状态记录与工作区不一致 | drifted | change-control.md |
 | S07-missing-reference | 验收参考文件缺失时的降级行为 | missing-acceptance | acceptance.md |
+| S08-deep-router-planning | fake KB 下的 planning 深知识路由 | planning-ready + fake KB | planning.md + planning-deep.md |
+| S09-deep-router-fallback | 没有 local config 时只用核心 Skill | release-candidate | acceptance.md；不得读 knowledge-router |
+| S10-deep-router-isolation | change_control 路由隔离，不追原始资料 | existing + fake KB | change-control.md + change-control-deep.md |
 
 fixture 均为运行时生成的合成 Git 仓库（一个「家庭物品管理工具」示例项目）：
 
@@ -30,7 +33,9 @@ fixture 均为运行时生成的合成 Git 仓库（一个「家庭物品管理�
 - `existing`：含 `docs/PROJECT.md` 与源码的既存项目；
 - `release-candidate`：任务处于 READY FOR REVIEW 状态；
 - `drifted`：在 existing 基础上制造未提交修改（与状态文件记录矛盾，考验是否盲信记录）；
-- `missing-acceptance`：故意删除 Skill 的 `acceptance.md`，考验缺文档时是否诚实阻塞而不是凭记忆补写。
+- `missing-acceptance`：故意删除 Skill 的 `acceptance.md`，考验缺文档时是否诚实阻塞而不是凭记忆补写；
+- `planning-ready`：架构已冻结、明确等待规划的 CSV 导入项目；
+- `fake KB`：仓库内合成的小型知识库，只包含 planning / change-control / acceptance 方法论文档和一个 `90 原始资料/DO_NOT_READ.md` 诱饵，用于验证 Router 精确加载与隔离。
 
 ## 前提
 
@@ -57,7 +62,9 @@ python run_graders.py runs/<时间戳>
 
 为保证可复现性和隐私，`copy_skill()` 会强制排除 `project-guide.local.json`：Eval 不读取维护者的私人 Obsidian / Knowledge Base，只测试公开核心 Skill 的 fallback 行为。
 
-因此当前 7 个端到端场景验证的是“没有本地知识库也能正常工作且不回归”。本地 Knowledge Router 的配置完整性由 `skill/project-guide/scripts/validate_knowledge_base.py` 校验；实际深知识读取属于本机增强测试，不把私人知识库纳入公开 Eval。
+S01–S07 验证核心 Skill 在没有本地知识库时仍可正常工作；S08–S10 使用仓库内的 **fake KB** 验证 Knowledge Router 的公开可复现行为，不依赖维护者的私人 Obsidian。运行器会在临时工作区生成 `project-guide.local.json` 指向 fake KB，运行结束后产物仍只存在于被忽略的 `eval/runs/`。
+
+Router 场景除 rubric 外还记录客观信号：是否读取 `knowledge-router.md`、是否读取正确 deep reference、是否触碰 forbidden reference / `90 原始资料`，以及 `router_objective_pass`。真实私人 local config 仍被 `copy_skill()` 强制排除。
 
 ## 产物
 
